@@ -130,7 +130,25 @@
 
                 <div class="form-group">
                     <label>Fecha:</label>
-                    <input type="date" id="examDate">
+                    <div class="datepicker-wrapper">
+                        <input type="text" id="examDate" placeholder="dd/mm/aaaa" readonly>
+                        <button type="button" class="pixel-btn tiny" id="openDatepicker">CAL</button>
+                        <div class="datepicker pixel-border" id="datepicker" aria-hidden="true">
+                            <div class="datepicker-header">
+                                <button class="nav-btn" data-action="prev">‹</button>
+                                <div class="month-label" id="datepickerMonth"></div>
+                                <button class="nav-btn" data-action="next">›</button>
+                            </div>
+                            <div class="datepicker-weekdays">
+                                <span>LU</span><span>MA</span><span>MI</span><span>JU</span><span>VI</span><span>SA</span><span>DO</span>
+                            </div>
+                            <div class="datepicker-days" id="datepickerDays"></div>
+                            <div class="datepicker-quick">
+                                <button type="button" class="pixel-btn tiny" data-action="today">Hoy</button>
+                                <button type="button" class="pixel-btn tiny" data-action="tomorrow">Mañana</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -210,6 +228,31 @@
                         <span class="stats-card-label">MINUTOS</span>
                     </div>
                 </div>
+
+                <h3>Gamificación</h3>
+                <div class="gamification-panel pixel-border">
+                    <div class="gamification-top">
+                        <div>
+                            <div class="gamification-label">Nivel</div>
+                            <div class="gamification-value" id="levelValue">1</div>
+                        </div>
+                        <div>
+                            <div class="gamification-label">XP</div>
+                            <div class="gamification-value" id="xpValue">0</div>
+                        </div>
+                        <div>
+                            <div class="gamification-label">Racha</div>
+                            <div class="gamification-value" id="streakValue">0</div>
+                        </div>
+                    </div>
+                    <div class="xp-bar">
+                        <div class="xp-bar-fill" id="xpBar"></div>
+                    </div>
+                    <div class="gamification-note" id="gamificationNote">Suma XP completando pomodoros.</div>
+                </div>
+
+                <h3>Logros</h3>
+                <div class="item-list achievements-list" id="achievementsList"></div>
             </div>
 
             <!-- Tab: Historial -->
@@ -269,6 +312,8 @@
             <button class="pixel-btn" id="closeModal">¡GRACIAS!</button>
         </div>
     </div>
+
+    <div class="achievement-toast pixel-border" id="achievementToast" aria-live="polite"></div>
 
     <script src="app.js"></script>
 </body>

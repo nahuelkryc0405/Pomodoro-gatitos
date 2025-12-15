@@ -224,6 +224,11 @@ h3 {
     padding: 8px 12px;
 }
 
+.pixel-btn.tiny {
+    font-size: 0.45rem;
+    padding: 8px;
+}
+
 /* Stats */
 .stats {
     display: flex;
@@ -468,6 +473,111 @@ h3 {
 }
 
 /* Forms */
+.datepicker-wrapper {
+    position: relative;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.datepicker {
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: var(--cream);
+    padding: 12px;
+    min-width: 260px;
+    display: none;
+    z-index: 20;
+}
+
+.datepicker.show {
+    display: block;
+}
+
+.datepicker-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.nav-btn {
+    background: var(--pink-main);
+    border: 3px solid var(--pixel-shadow);
+    color: var(--text-dark);
+    padding: 6px 10px;
+    cursor: pointer;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.5rem;
+    box-shadow: 2px 2px 0 var(--pixel-shadow);
+}
+
+.nav-btn:hover {
+    background: var(--pink-light);
+}
+
+.month-label {
+    font-size: 0.55rem;
+    color: var(--text-dark);
+    text-align: center;
+    flex: 1;
+}
+
+.datepicker-weekdays {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    font-size: 0.45rem;
+    color: var(--text-dark);
+    margin-bottom: 6px;
+    text-align: center;
+}
+
+.datepicker-days {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+}
+
+.datepicker-day {
+    background: var(--pink-pale);
+    border: 3px solid var(--pink-main);
+    color: var(--text-dark);
+    padding: 8px 0;
+    font-size: 0.55rem;
+    cursor: pointer;
+    text-align: center;
+    transition: background 0.1s, transform 0.1s;
+}
+
+.datepicker-day:hover {
+    background: var(--pink-light);
+    transform: translate(1px, 1px);
+}
+
+.datepicker-day.disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.datepicker-day.today {
+    border-color: var(--pixel-shadow);
+}
+
+.datepicker-day.selected {
+    background: var(--pink-main);
+    border-color: var(--pixel-shadow);
+    color: white;
+}
+
+.datepicker-quick {
+    display: flex;
+    gap: 8px;
+    margin-top: 8px;
+    justify-content: space-between;
+}
+
 .form-group {
     margin-bottom: 15px;
     text-align: left;
@@ -610,6 +720,136 @@ h3 {
 .stats-card-label {
     font-size: 0.4rem;
     color: var(--text-dark);
+}
+
+.gamification-panel {
+    background: var(--pink-pale);
+    padding: 15px;
+    margin-top: 10px;
+}
+
+.gamification-top {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.gamification-label {
+    font-size: 0.45rem;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+
+.gamification-value {
+    font-size: 1rem;
+    color: var(--pink-dark);
+    text-shadow: 2px 2px 0 var(--pixel-shadow);
+}
+
+.xp-bar {
+    height: 24px;
+    background: var(--pink-pale);
+    border: 3px solid var(--pink-main);
+    position: relative;
+    overflow: hidden;
+    box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.xp-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--pink-main), var(--pink-dark), var(--pink-main));
+    background-size: 200% 100%;
+    width: 0%;
+    transition: width 0.6s ease;
+    animation: shimmer 2s infinite linear;
+    position: relative;
+}
+
+.xp-bar-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50%;
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), transparent);
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: 0% 0%;
+    }
+    100% {
+        background-position: 200% 0%;
+    }
+}
+
+.gamification-note {
+    font-size: 0.45rem;
+    color: var(--text-dark);
+    margin-top: 8px;
+    text-align: center;
+}
+
+.achievements-list {
+    max-height: 240px;
+}
+
+.achievement-card {
+    background: var(--cream);
+    border: 3px solid var(--pink-main);
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 0.5rem;
+    color: var(--text-dark);
+}
+
+.achievement-card .title {
+    color: var(--pink-dark);
+    display: block;
+    margin-bottom: 6px;
+}
+
+.achievement-card .desc {
+    font-size: 0.45rem;
+    opacity: 0.9;
+}
+
+.achievement-card.unlocked {
+    background: #f8e1f0;
+    border-color: var(--pixel-shadow);
+}
+
+.achievement-toast {
+    position: fixed;
+    right: 20px;
+    top: 20px;
+    padding: 16px;
+    background: var(--cream);
+    color: var(--text-dark);
+    display: none;
+    z-index: 1200;
+    max-width: 280px;
+    font-size: 0.55rem;
+    line-height: 1.6;
+    animation: slideInRight 0.3s ease;
+}
+
+.achievement-toast.show {
+    display: block;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }
 
 /* Empty State */

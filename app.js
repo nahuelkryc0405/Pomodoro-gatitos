@@ -9,7 +9,8 @@ const DataManager = {
             subjects: this.getSubjects(),
             exams: this.getExams(),
             goals: this.getGoals(),
-            sessions: this.getSessions()
+            sessions: this.getSessions(),
+            gamification: this.getGamification()
         };
     },
 
@@ -135,6 +136,22 @@ const DataManager = {
         return session;
     },
 
+    // Gamificación
+    getGamification() {
+        const data = localStorage.getItem('gamification');
+        return data ? JSON.parse(data) : {
+            xp: 0,
+            level: 1,
+            streak: 0,
+            lastSessionDate: null,
+            achievements: []
+        };
+    },
+
+    saveGamification(gamification) {
+        localStorage.setItem('gamification', JSON.stringify(gamification));
+    },
+
     // Estadísticas
     getStatsByPeriod(period = 'day') {
         const sessions = this.getSessions();
@@ -180,6 +197,185 @@ const DataManager = {
         return grouped;
     }
 };
+
+// ==========================================
+// DATE PICKER CUSTOM
+// ==========================================
+class PixelDatePicker {
+    constructor(inputId) {
+        this.input = document.getElementById(inputId);
+        this.container = document.getElementById('datepicker');
+        this.monthLabel = document.getElementById('datepickerMonth');
+        this.daysContainer = document.getElementById('datepickerDays');
+        this.openBtn = document.getElementById('openDatepicker');
+        this.viewDate = new Date();
+        this.selectedDate = null;
+        this.toastTimeout = null;
+
+        if (!this.input || !this.container) return;
+
+        this.bindEvents();
+        this.render();
+    }
+
+    bindEvents() {
+        const prev = this.container.querySelector('[data-action="prev"]');
+        const next = this.container.querySelector('[data-action="next"]');
+
+        prev?.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.changeMonth(-1);
+        });
+
+        next?.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.changeMonth(1);
+        });
+
+        this.openBtn?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggle();
+        });
+
+        this.input.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.toggle(true);
+        });
+
+        this.container.addEventListener('click', (e) => e.stopPropagation());
+
+        document.addEventListener('click', (e) => {
+            if (!this.container.classList.contains('show')) return;
+            if (!this.container.contains(e.target) && e.target !== this.input && e.target !== this.openBtn) {
+                this.close();
+            }
+        });
+
+        this.container.querySelectorAll('.datepicker-quick .pixel-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const action = btn.dataset.action;
+                if (action === 'today') this.selectDate(new Date());
+                if (action === 'tomorrow') {
+                    const tomorrow = new Date();
+                    tomorrow.setDate(tomorrow.getDate() + 1);
+                    this.selectDate(tomorrow);
+                }
+            });
+        });
+    }
+
+    toggle(forceOpen = false) {
+        if (this.container.classList.contains('show') && !forceOpen) {
+            this.close();
+        } else {
+            this.open();
+        }
+    }
+
+    open() {
+        this.container.classList.add('show');
+        this.container.setAttribute('aria-hidden', 'false');
+        this.render();
+    }
+
+    close() {
+        this.container.classList.remove('show');
+        this.container.setAttribute('aria-hidden', 'true');
+    }
+
+    changeMonth(delta) {
+        this.viewDate.setMonth(this.viewDate.getMonth() + delta);
+        this.render();
+    }
+
+    render() {
+        if (!this.monthLabel || !this.daysContainer) return;
+
+        const year = this.viewDate.getFullYear();
+        const month = this.viewDate.getMonth();
+
+        this.monthLabel.textContent = this.viewDate.toLocaleDateString('es-ES', {
+            month: 'long',
+            year: 'numeric'
+        });
+
+        const firstDay = new Date(year, month, 1);
+        const startOffset = (firstDay.getDay() + 6) % 7; // lunes = 0
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+        this.daysContainer.innerHTML = '';
+
+        for (let i = 0; i < startOffset; i++) {
+            const placeholder = document.createElement('button');
+            placeholder.type = 'button';
+            placeholder.className = 'datepicker-day disabled';
+            placeholder.disabled = true;
+            placeholder.setAttribute('aria-hidden', 'true');
+            this.daysContainer.appendChild(placeholder);
+        }
+
+        for (let day = 1; day <= daysInMonth; day++) {
+            const date = new Date(year, month, day);
+            const btn = document.createElement('button');
+            btn.type = 'button';
+            btn.className = 'datepicker-day';
+            btn.textContent = day;
+
+            if (this.isSameDate(date, new Date())) {
+                btn.classList.add('today');
+            }
+
+            if (this.selectedDate && this.isSameDate(date, this.selectedDate)) {
+                btn.classList.add('selected');
+            }
+
+            btn.addEventListener('click', () => this.selectDate(date));
+            this.daysContainer.appendChild(btn);
+        }
+    }
+
+    isSameDate(a, b) {
+        return a.getFullYear() === b.getFullYear() &&
+            a.getMonth() === b.getMonth() &&
+            a.getDate() === b.getDate();
+    }
+
+    formatDisplay(date) {
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    }
+
+    toISO(date) {
+        return date.toISOString().split('T')[0];
+    }
+
+    selectDate(date) {
+        this.selectedDate = date;
+        const iso = this.toISO(date);
+        if (this.input) {
+            this.input.value = this.formatDisplay(date);
+            this.input.dataset.iso = iso;
+        }
+        this.close();
+        this.render();
+    }
+
+    getISOValue() {
+        return this.input?.dataset.iso || '';
+    }
+
+    clear() {
+        if (this.input) {
+            this.input.value = '';
+            delete this.input.dataset.iso;
+        }
+        this.selectedDate = null;
+        this.viewDate = new Date();
+        this.render();
+    }
+}
 
 // ==========================================
 // POMODORO TIMER
@@ -362,10 +558,11 @@ class PomodoroTimer {
 
             this.saveState();
 
-            // Actualizar estadísticas en la UI
+            // Actualizar estadísticas y gamificación en la UI
             if (window.app) {
                 window.app.updateStatistics();
                 window.app.updateHistory();
+                window.app.handlePomodoroCompleted();
             }
         } else {
             // After break, go back to pomodoro
@@ -524,11 +721,26 @@ class App {
     constructor() {
         this.timer = null;
         this.currentTab = 'exams';
+        this.datePicker = null;
+        this.toastTimeout = null;
+        this.xpPerPomodoro = 25;
+        this.xpPerLevel = 100;
+        this.achievementsCatalog = [
+            { id: 'primer_pomodoro', title: '🎯 Primer Paso', desc: 'Completa tu primer pomodoro.', condition: (ctx) => ctx.timer.completedPomodoros >= 1 },
+            { id: 'dia_productivo', title: '🔥 Día Productivo', desc: 'Completa 5 pomodoros en un día.', condition: (ctx) => ctx.dayStats.totalSessions >= 5 },
+            { id: 'racha_3', title: '⚡ Racha x3', desc: 'Estudia 3 días seguidos.', condition: (ctx) => ctx.gamification.streak >= 3 },
+            { id: 'racha_7', title: '👑 Racha Legendaria', desc: 'Estudia 7 días seguidos.', condition: (ctx) => ctx.gamification.streak >= 7 },
+            { id: 'pomodoros_10', title: '💪 Compromiso', desc: 'Completa 10 pomodoros en total.', condition: (ctx) => ctx.timer.completedPomodoros >= 10 },
+            { id: 'pomodoros_25', title: '🏆 Maratón 25', desc: 'Completa 25 pomodoros en total.', condition: (ctx) => ctx.timer.completedPomodoros >= 25 },
+            { id: 'pomodoros_50', title: '💎 Maestro del Foco', desc: 'Completa 50 pomodoros en total.', condition: (ctx) => ctx.timer.completedPomodoros >= 50 },
+            { id: 'nivel_5', title: '⭐ Nivel 5', desc: 'Alcanza el nivel 5.', condition: (ctx) => ctx.gamification.level >= 5 }
+        ];
         this.init();
     }
 
     init() {
         this.timer = new PomodoroTimer();
+        this.datePicker = new PixelDatePicker('examDate');
         this.setupTabs();
         this.loadSubjectsToSelect();
         this.loadExams();
@@ -537,6 +749,7 @@ class App {
         this.updateHistory();
         this.checkReminders();
         this.setupForms();
+        this.renderGamification();
     }
 
     setupTabs() {
@@ -663,6 +876,152 @@ class App {
         return div;
     }
 
+    handlePomodoroCompleted() {
+        const gamification = DataManager.getGamification();
+        const timerData = DataManager.getTimerData();
+        const dayStats = DataManager.getStatsByPeriod('day');
+        const todayKey = this.getDateKey(new Date());
+
+        // Actualizar racha
+        if (!gamification.lastSessionDate) {
+            gamification.streak = 1;
+        } else {
+            const diff = this.getDayDifference(gamification.lastSessionDate, todayKey);
+            if (diff === 0) {
+                // Misma fecha, no se modifica la racha
+            } else if (diff === 1) {
+                // Día consecutivo
+                gamification.streak += 1;
+            } else if (diff > 1) {
+                // Se rompió la racha
+                gamification.streak = 1;
+            }
+        }
+
+        gamification.lastSessionDate = todayKey;
+        gamification.xp = (gamification.xp || 0) + this.xpPerPomodoro;
+
+        // Calcular nivel: nivel 1 = 0-99 XP, nivel 2 = 100-199 XP, etc.
+        const newLevel = Math.floor(gamification.xp / this.xpPerLevel) + 1;
+        if (newLevel > (gamification.level || 1)) {
+            this.showAchievementToast(`⭐ ¡Subiste al nivel ${newLevel}!`);
+        }
+        gamification.level = newLevel;
+        gamification.achievements = gamification.achievements || [];
+
+        // Verificar logros nuevos
+        const unlocked = this.checkAchievements(gamification, { gamification, timer: timerData, dayStats });
+        DataManager.saveGamification(gamification);
+        this.renderGamification(gamification);
+
+        // Mostrar notificación de logros desbloqueados
+        if (unlocked.length > 0) {
+            unlocked.forEach(achievement => {
+                this.showAchievementToast(`🏆 Logro desbloqueado: ${achievement.title}`);
+            });
+        }
+    }
+
+    getDateKey(date) {
+        const normalized = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+        return normalized.toISOString().split('T')[0];
+    }
+
+    getDayDifference(lastKey, currentKey) {
+        const last = new Date(lastKey);
+        const current = new Date(currentKey);
+        return Math.floor((current - last) / (1000 * 60 * 60 * 24));
+    }
+
+    checkAchievements(gamification, context) {
+        const unlocked = [];
+        this.achievementsCatalog.forEach(achievement => {
+            const already = gamification.achievements.includes(achievement.id);
+            if (!already && achievement.condition(context)) {
+                gamification.achievements.push(achievement.id);
+                unlocked.push(achievement);
+            }
+        });
+        return unlocked;
+    }
+
+    renderGamification(gamificationData = DataManager.getGamification()) {
+        const levelEl = document.getElementById('levelValue');
+        const xpEl = document.getElementById('xpValue');
+        const streakEl = document.getElementById('streakValue');
+        const xpBar = document.getElementById('xpBar');
+        const noteEl = document.getElementById('gamificationNote');
+
+        if (!levelEl || !xpEl || !streakEl || !xpBar) return;
+
+        levelEl.textContent = gamificationData.level || 1;
+        xpEl.textContent = `${gamificationData.xp || 0} XP`;
+        streakEl.textContent = `${gamificationData.streak || 0}`;
+
+        const xpInLevel = (gamificationData.xp || 0) % this.xpPerLevel;
+        const percent = Math.min(100, (xpInLevel / this.xpPerLevel) * 100);
+        xpBar.style.width = `${percent}%`;
+
+        if (noteEl) {
+            const missing = this.xpPerLevel - xpInLevel;
+            if (missing === 0) {
+                noteEl.textContent = `¡Felicitaciones! Estás en el nivel ${gamificationData.level}.`;
+            } else {
+                noteEl.textContent = `Faltan ${missing} XP para el nivel ${gamificationData.level + 1}.`;
+            }
+        }
+
+        this.renderAchievements(gamificationData);
+    }
+
+    renderAchievements(gamificationData) {
+        const container = document.getElementById('achievementsList');
+        if (!container) return;
+
+        if (!this.achievementsCatalog.length) {
+            container.innerHTML = '<div class="empty-state">Sin logros configurados</div>';
+            return;
+        }
+
+        const unlocked = new Set(gamificationData.achievements || []);
+        container.innerHTML = '';
+
+        this.achievementsCatalog.forEach(achievement => {
+            const card = document.createElement('div');
+            const isUnlocked = unlocked.has(achievement.id);
+            card.className = `achievement-card ${isUnlocked ? 'unlocked' : ''}`;
+            card.innerHTML = `
+                <span class="title">${achievement.title}</span>
+                <span class="desc">${achievement.desc}</span>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    showAchievementToast(message, duration = 4000) {
+        const toast = document.getElementById('achievementToast');
+        if (!toast) return;
+
+        // Si ya hay un toast visible, esperar a que termine
+        if (this.toastTimeout) {
+            clearTimeout(this.toastTimeout);
+            toast.classList.remove('show');
+
+            setTimeout(() => {
+                this.showAchievementToast(message, duration);
+            }, 300);
+            return;
+        }
+
+        toast.textContent = message;
+        toast.classList.add('show');
+
+        this.toastTimeout = setTimeout(() => {
+            toast.classList.remove('show');
+            this.toastTimeout = null;
+        }, duration);
+    }
+
     updateStatistics() {
         const periods = ['day', 'week', 'month'];
         periods.forEach(period => {
@@ -759,13 +1118,15 @@ class App {
         if (addExamBtn) {
             addExamBtn.addEventListener('click', () => {
                 const subject = document.getElementById('examSubject').value;
-                const date = document.getElementById('examDate').value;
+                const examDateInput = document.getElementById('examDate');
+                const date = this.datePicker ? this.datePicker.getISOValue() : examDateInput.value;
                 const notes = document.getElementById('examNotes').value.trim();
 
                 if (subject && date) {
                     DataManager.addExam({ subject, date, notes });
                     document.getElementById('examSubject').value = '';
-                    document.getElementById('examDate').value = '';
+                    examDateInput.value = '';
+                    if (this.datePicker) this.datePicker.clear();
                     document.getElementById('examNotes').value = '';
                     this.loadExams();
                     this.checkReminders();
