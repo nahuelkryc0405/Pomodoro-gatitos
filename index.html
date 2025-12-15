@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🐱 Pomodoro Gatito 🐱</title>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- TIMER PRINCIPAL -->
+        <div class="container pixel-border">
+            <h1>🐱 POMODORO GATITO 🐱</h1>
+
+            <div class="cat-container">
+                <div class="pixel-cat">
+                    <svg class="cat-svg" viewBox="0 0 16 16" fill="none">
+                        <!-- Cat body -->
+                        <rect x="4" y="8" width="8" height="6" fill="#ffb8dd"/>
+                        <!-- Cat head -->
+                        <rect x="3" y="4" width="10" height="6" fill="#ffb8dd"/>
+                        <!-- Ears -->
+                        <rect x="3" y="2" width="2" height="3" fill="#ffb8dd"/>
+                        <rect x="11" y="2" width="2" height="3" fill="#ffb8dd"/>
+                        <!-- Inner ears -->
+                        <rect x="4" y="3" width="1" height="1" fill="#ff8fca"/>
+                        <rect x="11" y="3" width="1" height="1" fill="#ff8fca"/>
+                        <!-- Eyes -->
+                        <rect x="5" y="5" width="2" height="2" fill="#6b2d4d"/>
+                        <rect x="9" y="5" width="2" height="2" fill="#6b2d4d"/>
+                        <!-- Eye shine -->
+                        <rect x="5" y="5" width="1" height="1" fill="white"/>
+                        <rect x="9" y="5" width="1" height="1" fill="white"/>
+                        <!-- Nose -->
+                        <rect x="7" y="7" width="2" height="1" fill="#d65c9a"/>
+                        <!-- Mouth -->
+                        <rect x="6" y="8" width="1" height="1" fill="#d65c9a"/>
+                        <rect x="9" y="8" width="1" height="1" fill="#d65c9a"/>
+                        <!-- Blush -->
+                        <rect x="4" y="7" width="1" height="1" fill="#ff8fca"/>
+                        <rect x="11" y="7" width="1" height="1" fill="#ff8fca"/>
+                        <!-- Paws -->
+                        <rect x="4" y="13" width="2" height="1" fill="#ffb8dd"/>
+                        <rect x="10" y="13" width="2" height="1" fill="#ffb8dd"/>
+                        <!-- Tail -->
+                        <rect x="12" y="10" width="3" height="2" fill="#ffb8dd"/>
+                        <rect x="14" y="8" width="1" height="2" fill="#ffb8dd"/>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="mode-selector">
+                <button class="mode-btn active" data-mode="pomodoro" data-time="25">POMODORO</button>
+                <button class="mode-btn" data-mode="short" data-time="5">DESCANSO</button>
+                <button class="mode-btn" data-mode="long" data-time="15">DESCANSO LARGO</button>
+            </div>
+
+            <div class="timer-display pixel-border">
+                <span class="timer-text" id="timer">25:00</span>
+                <span class="timer-label" id="timer-label">¡Hora de concentrarse!</span>
+            </div>
+
+            <div class="progress-container pixel-border">
+                <div class="progress-bar" id="progress"></div>
+            </div>
+
+            <div class="hearts-container" id="hearts"></div>
+
+            <!-- Selección de materia y nota -->
+            <div class="form-group">
+                <label>Materia actual:</label>
+                <select id="currentSubject">
+                    <option value="">Seleccionar materia</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Nota de esta sesión (opcional):</label>
+                <textarea id="sessionNote" placeholder="¿Qué estás estudiando?"></textarea>
+            </div>
+
+            <div class="buttons">
+                <button class="pixel-btn" id="startBtn">▶ INICIAR</button>
+                <button class="pixel-btn" id="pauseBtn">⏸ PAUSA</button>
+                <button class="pixel-btn" id="resetBtn">↺ RESET</button>
+            </div>
+
+            <div class="stats pixel-border">
+                <div class="stat">
+                    <span class="stat-value" id="completedPomodoros">0</span>
+                    <span class="stat-label">POMODOROS</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value" id="totalTime">0</span>
+                    <span class="stat-label">MINUTOS</span>
+                </div>
+            </div>
+
+            <div class="daily-progress">
+                <span id="sessionInfo">Sesión actual: 0 de 4 pomodoros</span>
+            </div>
+        </div>
+
+        <!-- SIDEBAR CON FUNCIONALIDADES -->
+        <div class="sidebar pixel-border">
+            <h2>📚 GESTIÓN DE ESTUDIO</h2>
+
+            <!-- Recordatorios -->
+            <div id="reminders"></div>
+
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="exams">Exámenes</button>
+                <button class="tab-btn" data-tab="goals">Metas</button>
+                <button class="tab-btn" data-tab="stats">Stats</button>
+                <button class="tab-btn" data-tab="history">Historial</button>
+            </div>
+
+            <!-- Tab: Exámenes -->
+            <div id="examsTab" class="tab-content active">
+                <h3>📅 Agenda de Exámenes</h3>
+
+                <div class="form-group">
+                    <label>Materia:</label>
+                    <select id="examSubject">
+                        <option value="">Seleccionar materia</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Fecha:</label>
+                    <input type="date" id="examDate">
+                </div>
+
+                <div class="form-group">
+                    <label>Notas (opcional):</label>
+                    <textarea id="examNotes" placeholder="Ej: Capítulos 1-5, traer calculadora"></textarea>
+                </div>
+
+                <button class="pixel-btn small" id="addExam">+ Agregar Examen</button>
+
+                <h3>Próximos Exámenes</h3>
+                <div class="item-list" id="examsList"></div>
+            </div>
+
+            <!-- Tab: Metas -->
+            <div id="goalsTab" class="tab-content">
+                <h3>🎯 Metas de Estudio</h3>
+
+                <div class="form-group">
+                    <label>Materia:</label>
+                    <select id="goalSubject">
+                        <option value="">Seleccionar materia</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción de la meta:</label>
+                    <input type="text" id="goalDescription" placeholder="Ej: Terminar unidad 3">
+                </div>
+
+                <div class="form-group">
+                    <label>Pomodoros necesarios:</label>
+                    <input type="number" id="goalPomodoros" min="1" value="4">
+                </div>
+
+                <button class="pixel-btn small" id="addGoal">+ Agregar Meta</button>
+
+                <h3>Mis Metas</h3>
+                <div class="item-list" id="goalsList"></div>
+            </div>
+
+            <!-- Tab: Estadísticas -->
+            <div id="statsTab" class="tab-content">
+                <h3>📊 Estadísticas</h3>
+
+                <h3>Hoy</h3>
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <span class="stats-card-value" id="daySessions">0</span>
+                        <span class="stats-card-label">SESIONES</span>
+                    </div>
+                    <div class="stats-card">
+                        <span class="stats-card-value" id="dayMinutes">0</span>
+                        <span class="stats-card-label">MINUTOS</span>
+                    </div>
+                </div>
+
+                <h3>Esta Semana</h3>
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <span class="stats-card-value" id="weekSessions">0</span>
+                        <span class="stats-card-label">SESIONES</span>
+                    </div>
+                    <div class="stats-card">
+                        <span class="stats-card-value" id="weekMinutes">0</span>
+                        <span class="stats-card-label">MINUTOS</span>
+                    </div>
+                </div>
+
+                <h3>Este Mes</h3>
+                <div class="stats-grid">
+                    <div class="stats-card">
+                        <span class="stats-card-value" id="monthSessions">0</span>
+                        <span class="stats-card-label">SESIONES</span>
+                    </div>
+                    <div class="stats-card">
+                        <span class="stats-card-value" id="monthMinutes">0</span>
+                        <span class="stats-card-label">MINUTOS</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab: Historial -->
+            <div id="historyTab" class="tab-content">
+                <h3>📜 Historial de Sesiones</h3>
+                <div class="item-list" id="historyList"></div>
+            </div>
+
+            <!-- Gestión de Materias -->
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid var(--pink-main);">
+                <h3>➕ Agregar Materia</h3>
+                <div class="form-group">
+                    <input type="text" id="subjectName" placeholder="Nombre de la materia">
+                </div>
+                <button class="pixel-btn small" id="addSubject">+ Agregar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Celebration Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal pixel-border">
+            <h2 id="modalTitle">¡FELICITACIONES!</h2>
+            <div class="celebration-cats">
+                <svg class="celebration-cat" width="48" height="48" viewBox="0 0 16 16">
+                    <rect x="4" y="8" width="8" height="6" fill="#ffb8dd"/>
+                    <rect x="3" y="4" width="10" height="6" fill="#ffb8dd"/>
+                    <rect x="3" y="2" width="2" height="3" fill="#ffb8dd"/>
+                    <rect x="11" y="2" width="2" height="3" fill="#ffb8dd"/>
+                    <rect x="5" y="5" width="2" height="2" fill="#6b2d4d"/>
+                    <rect x="9" y="5" width="2" height="2" fill="#6b2d4d"/>
+                    <rect x="7" y="7" width="2" height="1" fill="#d65c9a"/>
+                    <rect x="6" y="8" width="4" height="1" fill="#d65c9a"/>
+                </svg>
+                <svg class="celebration-cat" width="48" height="48" viewBox="0 0 16 16">
+                    <rect x="4" y="8" width="8" height="6" fill="#ff8fca"/>
+                    <rect x="3" y="4" width="10" height="6" fill="#ff8fca"/>
+                    <rect x="3" y="2" width="2" height="3" fill="#ff8fca"/>
+                    <rect x="11" y="2" width="2" height="3" fill="#ff8fca"/>
+                    <rect x="5" y="5" width="2" height="2" fill="#6b2d4d"/>
+                    <rect x="9" y="5" width="2" height="2" fill="#6b2d4d"/>
+                    <rect x="7" y="7" width="2" height="1" fill="#d65c9a"/>
+                    <rect x="6" y="8" width="4" height="1" fill="#d65c9a"/>
+                </svg>
+                <svg class="celebration-cat" width="48" height="48" viewBox="0 0 16 16">
+                    <rect x="4" y="8" width="8" height="6" fill="#d65c9a"/>
+                    <rect x="3" y="4" width="10" height="6" fill="#d65c9a"/>
+                    <rect x="3" y="2" width="2" height="3" fill="#d65c9a"/>
+                    <rect x="11" y="2" width="2" height="3" fill="#d65c9a"/>
+                    <rect x="5" y="5" width="2" height="2" fill="#fff"/>
+                    <rect x="9" y="5" width="2" height="2" fill="#fff"/>
+                    <rect x="7" y="7" width="2" height="1" fill="#ffb8dd"/>
+                    <rect x="6" y="8" width="4" height="1" fill="#ffb8dd"/>
+                </svg>
+            </div>
+            <p id="modalMessage">¡Completaste un pomodoro! Los gatitos están muy orgullosos de vos 🎉</p>
+            <button class="pixel-btn" id="closeModal">¡GRACIAS!</button>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
