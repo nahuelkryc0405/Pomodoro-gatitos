@@ -852,6 +852,160 @@ h3 {
     }
 }
 
+/* Sync Status */
+.sync-status {
+    background: var(--pink-pale);
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 2px solid var(--pink-main);
+    text-align: center;
+    font-size: 0.45rem;
+    color: var(--text-dark);
+}
+
+/* Cats Gallery */
+.cats-gallery {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.cat-card {
+    background: var(--pink-pale);
+    border: 3px solid var(--pink-main);
+    padding: 10px;
+    text-align: center;
+    transition: all 0.2s;
+}
+
+.cat-card:hover {
+    background: var(--pink-light);
+}
+
+.cat-card.selected {
+    border-color: var(--pixel-shadow);
+    background: var(--pink-light);
+    box-shadow: 0 0 0 2px var(--pink-dark);
+}
+
+.cat-card.locked {
+    opacity: 0.5;
+    filter: grayscale(0.8);
+}
+
+.cat-preview {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 8px;
+}
+
+.cat-preview svg {
+    width: 100%;
+    height: 100%;
+}
+
+.cat-info {
+    font-size: 0.45rem;
+    color: var(--text-dark);
+}
+
+.cat-name {
+    font-size: 0.5rem;
+    margin-bottom: 4px;
+    color: var(--pink-dark);
+}
+
+.cat-desc {
+    margin-bottom: 8px;
+    opacity: 0.8;
+}
+
+.locked-badge {
+    font-size: 0.4rem;
+    padding: 4px;
+    background: var(--pixel-shadow);
+    color: white;
+    margin-top: 6px;
+}
+
+/* Music Player */
+.music-player {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--cream);
+    padding: 12px;
+    min-width: 280px;
+    z-index: 1100;
+}
+
+.music-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.music-title {
+    font-size: 0.5rem;
+    color: var(--pink-dark);
+}
+
+.music-controls {
+    display: none;
+    margin-top: 10px;
+}
+
+.music-controls.active {
+    display: block;
+}
+
+.track-info {
+    font-size: 0.45rem;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.volume-control {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    font-size: 0.45rem;
+}
+
+.volume-control input[type="range"] {
+    flex: 1;
+    height: 8px;
+    background: var(--pink-pale);
+    border: 2px solid var(--pink-main);
+    outline: none;
+}
+
+.volume-control input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--pink-dark);
+    cursor: pointer;
+}
+
+.volume-control input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background: var(--pink-dark);
+    cursor: pointer;
+    border: none;
+}
+
+.track-selector {
+    display: flex;
+    gap: 5px;
+    justify-content: center;
+}
+
 /* Empty State */
 .empty-state {
     text-align: center;

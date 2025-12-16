@@ -750,6 +750,10 @@ class App {
         this.checkReminders();
         this.setupForms();
         this.renderGamification();
+        this.setupConfigButtons();
+        this.updateConfigStatus();
+        this.renderCatGallery();
+        this.updateMainCat();
     }
 
     setupTabs() {
@@ -1173,6 +1177,113 @@ class App {
     completeGoal(id) {
         DataManager.updateGoal(id, { completed: true });
         this.loadGoals();
+    }
+
+    // ==========================================
+    // CONFIGURACIÓN Y SINCRONIZACIÓN
+    // ==========================================
+
+    setupConfigButtons() {
+        // Botón de sincronización manual
+        const manualSyncBtn = document.getElementById('manualSync');
+        if (manualSyncBtn) {
+            manualSyncBtn.addEventListener('click', () => {
+                if (window.syncManager && window.syncManager.isOnline) {
+                    syncManager.syncToCloud();
+                    alert('✅ Sincronizado con la nube');
+                } else {
+                    alert('⚠️ Firebase no está configurado o no está disponible');
+                }
+            });
+        }
+
+        // Botón exportar
+        const exportBtn = document.getElementById('exportBtn');
+        if (exportBtn) {
+            exportBtn.addEventListener('click', () => {
+                if (window.syncManager) {
+                    syncManager.exportAllData();
+                }
+            });
+        }
+
+        // Botón importar
+        const importBtn = document.getElementById('importBtn');
+        const importFile = document.getElementById('importFile');
+        if (importBtn && importFile) {
+            importBtn.addEventListener('click', () => {
+                importFile.click();
+            });
+
+            importFile.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file && window.syncManager) {
+                    syncManager.importData(file);
+                }
+            });
+        }
+
+        // Botón borrar todo
+        const clearAllBtn = document.getElementById('clearAllBtn');
+        if (clearAllBtn) {
+            clearAllBtn.addEventListener('click', () => {
+                if (window.syncManager) {
+                    syncManager.clearAllData();
+                }
+            });
+        }
+    }
+
+    updateConfigStatus() {
+        const configStatus = document.getElementById('configSyncStatus');
+        const firebaseInfo = document.getElementById('firebaseInfo');
+
+        if (window.syncManager) {
+            const status = syncManager.getConnectionStatus();
+
+            if (configStatus) {
+                if (status.online) {
+                    configStatus.textContent = `✅ Conectado (${status.userId})`;
+                } else if (status.enabled) {
+                    configStatus.textContent = '⚠️ Configurado pero sin conexión';
+                } else {
+                    configStatus.textContent = '🔴 Solo local';
+                }
+            }
+
+            if (firebaseInfo) {
+                if (status.online) {
+                    firebaseInfo.textContent = `Firebase: Habilitado (${status.userId})`;
+                } else if (status.enabled) {
+                    firebaseInfo.textContent = 'Firebase: Configurado pero offline';
+                } else {
+                    firebaseInfo.textContent = 'Firebase: Deshabilitado';
+                }
+            }
+        }
+
+        // Actualizar cada 5 segundos
+        setTimeout(() => this.updateConfigStatus(), 5000);
+    }
+
+    // ==========================================
+    // GATITOS
+    // ==========================================
+
+    renderCatGallery() {
+        const container = document.getElementById('catsGallery');
+        if (!container || !window.catSelector) return;
+
+        const gamification = DataManager.getGamification();
+        const currentLevel = gamification.level || 1;
+
+        catSelector.renderCatGallery(container, currentLevel);
+    }
+
+    updateMainCat() {
+        if (window.catSelector) {
+            catSelector.updateMainCat();
+        }
     }
 }
 

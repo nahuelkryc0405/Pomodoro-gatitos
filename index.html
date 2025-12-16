@@ -109,12 +109,19 @@
             <!-- Recordatorios -->
             <div id="reminders"></div>
 
+            <!-- Estado de sincronización -->
+            <div class="sync-status" id="syncStatus">
+                <span>🔴 Solo local</span>
+            </div>
+
             <!-- Tabs -->
             <div class="tabs">
                 <button class="tab-btn active" data-tab="exams">Exámenes</button>
                 <button class="tab-btn" data-tab="goals">Metas</button>
                 <button class="tab-btn" data-tab="stats">Stats</button>
+                <button class="tab-btn" data-tab="cats">Gatitos</button>
                 <button class="tab-btn" data-tab="history">Historial</button>
+                <button class="tab-btn" data-tab="config">Config</button>
             </div>
 
             <!-- Tab: Exámenes -->
@@ -255,10 +262,50 @@
                 <div class="item-list achievements-list" id="achievementsList"></div>
             </div>
 
+            <!-- Tab: Gatitos -->
+            <div id="catsTab" class="tab-content">
+                <h3>🐱 Colección de Gatitos</h3>
+                <p style="font-size: 0.45rem; color: var(--text-dark); opacity: 0.9; margin-bottom: 15px;">
+                    Desbloquea nuevos gatitos subiendo de nivel. Selecciona tu favorito para que te acompañe durante tus sesiones de estudio.
+                </p>
+                <div class="cats-gallery" id="catsGallery"></div>
+            </div>
+
             <!-- Tab: Historial -->
             <div id="historyTab" class="tab-content">
                 <h3>📜 Historial de Sesiones</h3>
                 <div class="item-list" id="historyList"></div>
+            </div>
+
+            <!-- Tab: Configuración -->
+            <div id="configTab" class="tab-content">
+                <h3>⚙️ Configuración</h3>
+
+                <h3>Sincronización</h3>
+                <p style="font-size: 0.45rem; color: var(--text-dark); opacity: 0.9; margin-bottom: 10px;">
+                    Estado: <span id="configSyncStatus">Solo local</span>
+                </p>
+                <button class="pixel-btn small" id="manualSync">🔄 Sincronizar ahora</button>
+
+                <h3 style="margin-top: 20px;">Respaldo de datos</h3>
+                <div class="form-group">
+                    <button class="pixel-btn small" id="exportBtn">📥 Exportar datos</button>
+                </div>
+                <div class="form-group">
+                    <label>Importar datos:</label>
+                    <input type="file" id="importFile" accept=".json" style="display: none;">
+                    <button class="pixel-btn small" id="importBtn">📤 Importar datos</button>
+                </div>
+
+                <h3 style="margin-top: 20px;">Peligro</h3>
+                <button class="pixel-btn small btn-delete" id="clearAllBtn">🗑️ Borrar todos los datos</button>
+
+                <h3 style="margin-top: 20px;">Información</h3>
+                <div style="font-size: 0.4rem; color: var(--text-dark); opacity: 0.8; line-height: 1.8;">
+                    <p>Pomodoro Gatito v1.0</p>
+                    <p>Los datos se guardan en tu navegador.</p>
+                    <p id="firebaseInfo">Firebase: Deshabilitado</p>
+                </div>
             </div>
 
             <!-- Gestión de Materias -->
@@ -315,6 +362,16 @@
 
     <div class="achievement-toast pixel-border" id="achievementToast" aria-live="polite"></div>
 
+    <!-- Firebase SDK (solo si está habilitado) -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+
+    <!-- Scripts de la aplicación -->
+    <script src="firebase-config.js"></script>
+    <script src="sync.js"></script>
+    <script src="cats.js"></script>
+    <script src="music.js"></script>
     <script src="app.js"></script>
 </body>
 </html>
